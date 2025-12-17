@@ -13,6 +13,14 @@ export const description = "Flexible static blog/site generator written in Commo
 let connected = false;
 let sblPath = "sbcl";
 
+// Sanitize input to prevent code injection in Lisp strings
+function sanitizeLispString(input) {
+  if (input === null || input === undefined) return "";
+  return String(input)
+    .replace(/\\/g, "\\\\")
+    .replace(/"/g, '\\"');
+}
+
 async function runCommand(args, cwd = null) {
   const cmd = new Deno.Command(sblPath, {
     args: ["--script", ...args],
@@ -82,7 +90,8 @@ export const tools = [
       },
     },
     execute: async ({ path }) => {
-      return await runColeslaw(`(coleslaw:setup "${path || "."}")`, path);
+      const safePath = sanitizeLispString(path || ".");
+      return await runColeslaw(`(coleslaw:setup "${safePath}")`, path);
     },
   },
   {
@@ -95,7 +104,8 @@ export const tools = [
       },
     },
     execute: async ({ path }) => {
-      return await runColeslaw(`(coleslaw:main "${path || "."}")`, path);
+      const safePath = sanitizeLispString(path || ".");
+      return await runColeslaw(`(coleslaw:main "${safePath}")`, path);
     },
   },
   {
@@ -125,7 +135,8 @@ export const tools = [
       required: ["title"],
     },
     execute: async ({ path, title }) => {
-      return await runColeslaw(`(coleslaw:new-post "${title}")`, path);
+      const safeTitle = sanitizeLispString(title);
+      return await runColeslaw(`(coleslaw:new-post "${safeTitle}")`, path);
     },
   },
   {

@@ -1,22 +1,47 @@
-;;; STATE.scm — template-repo
+;;; STATE.scm — orbital-ssg
 ;; SPDX-License-Identifier: AGPL-3.0-or-later
 ;; SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 
 (define metadata
-  '((version . "0.1.0") (updated . "2025-12-15") (project . "template-repo")))
+  '((version . "0.1.0") (updated . "2025-12-17") (project . "orbital-ssg")))
 
 (define current-position
-  '((phase . "v0.1 - Initial Setup")
-    (overall-completion . 25)
-    (components ((rsr-compliance ((status . "complete") (completion . 100)))))))
+  '((phase . "v0.2 - Security Hardening")
+    (overall-completion . 40)
+    (components ((rsr-compliance ((status . "complete") (completion . 100)))
+                 (security-fixes ((status . "complete") (completion . 100)))
+                 (adapter-sanitization ((status . "complete") (completion . 100)))))))
 
 (define blockers-and-issues '((critical ()) (high-priority ())))
 
 (define critical-next-actions
-  '((immediate (("Verify CI/CD" . high))) (this-week (("Expand tests" . medium)))))
+  '((immediate (("Verify CI/CD" . high) ("Add adapter tests" . high)))
+    (this-week (("Expand tests" . medium) ("Add input validation tests" . medium)))
+    (next-sprint (("Add more adapters" . low) ("Documentation improvements" . low)))))
+
+(define roadmap
+  '((v0.3 (title . "Testing & Quality")
+          (items . ("Unit tests for all adapters"
+                    "Input sanitization tests"
+                    "CI/CD verification"
+                    "Code coverage setup")))
+    (v0.4 (title . "Hub Integration")
+          (items . ("MCP protocol validation"
+                    "Hub sync automation"
+                    "Adapter health checks")))
+    (v0.5 (title . "Documentation & Polish")
+          (items . ("API documentation"
+                    "Usage examples"
+                    "README completion")))
+    (v1.0 (title . "Production Release")
+          (items . ("Full test coverage"
+                    "Security audit"
+                    "Performance optimization"
+                    "Release packaging")))))
 
 (define session-history
-  '((snapshots ((date . "2025-12-15") (session . "initial") (notes . "SCM files added")))))
+  '((snapshots ((date . "2025-12-15") (session . "initial") (notes . "SCM files added"))
+              ((date . "2025-12-17") (session . "security-review") (notes . "SCM files updated, security fixes, roadmap created")))))
 
 (define state-summary
-  '((project . "template-repo") (completion . 25) (blockers . 0) (updated . "2025-12-15")))
+  '((project . "orbital-ssg") (completion . 35) (blockers . 0) (updated . "2025-12-17")))
