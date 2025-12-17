@@ -13,6 +13,22 @@ export const description = "Documentation generator for Julia packages";
 let connected = false;
 let juliaPath = "julia";
 
+// Sanitize input to prevent code injection in Julia strings
+function sanitizeJuliaString(input) {
+  if (input === null || input === undefined) return "";
+  return String(input)
+    .replace(/\\/g, "\\\\")
+    .replace(/"/g, '\\"')
+    .replace(/\$/g, "\\$")
+    .replace(/`/g, "\\`");
+}
+
+// Sanitize Julia identifiers (module names) - only allow alphanumeric and underscore
+function sanitizeJuliaIdentifier(input) {
+  if (input === null || input === undefined) return "";
+  return String(input).replace(/[^a-zA-Z0-9_]/g, "");
+}
+
 async function runJulia(code, cwd = null) {
   const cmd = new Deno.Command(juliaPath, {
     args: ["-e", code],
@@ -66,7 +82,7 @@ export const tools = [
       },
     },
     execute: async ({ path, sitename }) => {
-      const sn = sitename ? `sitename="${sitename}"` : "";
+      const sn = sitename ? `sitename="${sanitizeJuliaString(sitename)}"` : "";
       return await runJulia(`using Documenter; makedocs(${sn})`, path);
     },
   },
@@ -81,7 +97,7 @@ export const tools = [
       },
     },
     execute: async ({ path, repo }) => {
-      const r = repo ? `repo="${repo}"` : "";
+      const r = repo ? `repo="${sanitizeJuliaString(repo)}"` : "";
       return await runJulia(`using Documenter; deploydocs(${r})`, path);
     },
   },
@@ -97,7 +113,11 @@ export const tools = [
       required: ["module"],
     },
     execute: async ({ path, module }) => {
-      return await runJulia(`using Documenter, ${module}; doctest(${module})`, path);
+      const safeModule = sanitizeJuliaIdentifier(module);
+      if (!safeModule) {
+        return { success: false, stderr: "Invalid module name", stdout: "", code: 1 };
+      }
+      return await runJulia(`using Documenter, ${safeModule}; doctest(${safeModule})`, path);
     },
   },
   {

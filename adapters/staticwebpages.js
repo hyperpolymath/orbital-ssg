@@ -13,6 +13,16 @@ export const description = "Academic and personal website generator in Julia";
 let connected = false;
 let juliaPath = "julia";
 
+// Sanitize input to prevent code injection in Julia strings
+function sanitizeJuliaString(input) {
+  if (input === null || input === undefined) return "";
+  return String(input)
+    .replace(/\\/g, "\\\\")
+    .replace(/"/g, '\\"')
+    .replace(/\$/g, "\\$")
+    .replace(/`/g, "\\`");
+}
+
 async function runJulia(code, cwd = null) {
   const cmd = new Deno.Command(juliaPath, {
     args: ["-e", code],
@@ -65,7 +75,8 @@ export const tools = [
       },
     },
     execute: async ({ path }) => {
-      return await runJulia(`using StaticWebPages; init("${path || "."}")`, path);
+      const safePath = sanitizeJuliaString(path || ".");
+      return await runJulia(`using StaticWebPages; init("${safePath}")`, path);
     },
   },
   {

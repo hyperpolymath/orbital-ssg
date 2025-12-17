@@ -13,6 +13,16 @@ export const description = "Static site generator for technical blogging in Juli
 let connected = false;
 let juliaPath = "julia";
 
+// Sanitize input to prevent code injection in Julia strings
+function sanitizeJuliaString(input) {
+  if (input === null || input === undefined) return "";
+  return String(input)
+    .replace(/\\/g, "\\\\")
+    .replace(/"/g, '\\"')
+    .replace(/\$/g, "\\$")
+    .replace(/`/g, "\\`");
+}
+
 async function runJulia(code, cwd = null) {
   const cmd = new Deno.Command(juliaPath, {
     args: ["-e", code],
@@ -66,8 +76,9 @@ export const tools = [
       },
     },
     execute: async ({ path, template }) => {
-      const tmpl = template ? `; template="${template}"` : "";
-      return await runJulia(`using Franklin; newsite("${path || "."}"${tmpl})`);
+      const safePath = sanitizeJuliaString(path || ".");
+      const tmpl = template ? `; template="${sanitizeJuliaString(template)}"` : "";
+      return await runJulia(`using Franklin; newsite("${safePath}"${tmpl})`);
     },
   },
   {
@@ -83,8 +94,8 @@ export const tools = [
     },
     execute: async ({ path, port, host }) => {
       let args = "";
-      if (port) args += `port=${port}, `;
-      if (host) args += `host="${host}", `;
+      if (port) args += `port=${parseInt(port, 10)}, `;
+      if (host) args += `host="${sanitizeJuliaString(host)}", `;
       return await runJulia(`using Franklin; serve(${args.slice(0, -2)})`, path);
     },
   },
