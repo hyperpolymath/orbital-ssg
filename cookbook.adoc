@@ -1,0 +1,670 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+= orbital-ssg Cookbook
+:toc: left
+:toclevels: 3
+:sectnums:
+:icons: font
+:source-highlighter: rouge
+
+== Overview
+
+This cookbook provides recipes and commands for working with orbital-ssg, a collection of 28 MCP-compatible adapters for static site generators across 17 programming languages.
+
+[#cli]
+== CLI Commands
+
+=== Quick Reference
+
+[cols="2,3,1"]
+|===
+|Command |Description |Category
+
+|`just test`
+|Run all unit tests
+|Testing
+
+|`just test-all`
+|Run unit + e2e tests
+|Testing
+
+|`just lint`
+|Lint all code
+|Quality
+
+|`just fmt`
+|Format all code
+|Quality
+
+|`just check`
+|Verify project health
+|Build
+
+|`just security-scan`
+|Run security checks
+|Security
+
+|`just container`
+|Build container image
+|Container
+
+|`just adapters`
+|List all adapters
+|Info
+|===
+
+=== Testing Commands
+
+[source,bash]
+----
+# Run all unit tests
+just test
+
+# Run tests with coverage
+just test-cov
+
+# Run end-to-end tests
+just test-e2e
+
+# Run all tests (unit + e2e)
+just test-all
+
+# Test specific adapter
+just test-adapter zola
+
+# Watch mode for development
+just watch
+----
+
+=== Build & Quality Commands
+
+[source,bash]
+----
+# Check project health (lint + type check)
+just check
+
+# Format all code
+just fmt
+
+# Lint all code
+just lint
+
+# Build/verify syntax
+just build
+
+# Clean build artifacts
+just clean
+----
+
+=== Security Commands
+
+[source,bash]
+----
+# Run security scan
+just security-scan
+
+# Audit dependencies
+just audit
+
+# Check SPDX headers (via must)
+must audit.spdx
+----
+
+=== Adapter Commands
+
+[source,bash]
+----
+# List all available adapters
+just adapters
+
+# Check adapter connectivity
+just adapter-check zola
+
+# Check all adapter versions
+just adapter-versions
+----
+
+=== Container Commands
+
+[source,bash]
+----
+# Build container image
+just container
+
+# Run container interactively
+just container-run
+
+# Run tests in container
+just container-test
+----
+
+=== Development Commands
+
+[source,bash]
+----
+# Start development environment
+just dev
+
+# Start file watcher
+just watch
+
+# Start LSP for editor integration
+just lsp
+----
+
+=== Documentation Commands
+
+[source,bash]
+----
+# Generate API documentation
+just docs
+
+# Serve documentation locally
+just docs-serve
+----
+
+=== Release Commands
+
+[source,bash]
+----
+# Prepare release
+just release-prep 0.3.0
+
+# Create git tag
+just tag 0.3.0
+
+# Sync from hub
+just sync-from-hub
+
+# Sync to hub
+just sync-to-hub
+----
+
+[#just]
+== Just Recipes
+
+=== Configuration
+
+The `justfile` uses the following configuration:
+
+[source,just]
+----
+set shell := ["bash", "-cu"]
+set dotenv-load := true
+----
+
+=== Recipe Categories
+
+==== Build & Check
+
+[source,just]
+----
+# Check project health
+check:
+    deno lint adapters/
+    deno check adapters/*.js
+
+# Format all code
+fmt:
+    deno fmt adapters/ tests/
+
+# Lint all code
+lint:
+    deno lint adapters/ tests/
+----
+
+==== Testing
+
+[source,just]
+----
+# Run all tests
+test:
+    deno test --allow-run --allow-read tests/
+
+# Run with coverage
+test-cov:
+    deno test --allow-run --allow-read --coverage=coverage/ tests/
+    deno coverage coverage/
+
+# Run e2e tests
+test-e2e:
+    deno test --allow-run --allow-read --allow-net tests/integration/
+----
+
+==== Container
+
+[source,just]
+----
+# Build container
+container:
+    podman build -t orbital-ssg:latest .
+
+# Run container
+container-run:
+    podman run --rm -it orbital-ssg:latest
+
+# Test in container
+container-test:
+    podman run --rm orbital-ssg:latest deno test --allow-run tests/
+----
+
+[#nickel]
+== Nickel Formulae
+
+=== Type Definitions
+
+[source,nickel]
+----
+let Adapter = {
+  name : String,
+  language : String,
+  description : String,
+  tools : Array Tool,
+}
+
+let Tool = {
+  name : String,
+  description : String,
+  inputSchema : { type : String, properties : Dyn },
+  execute : Dyn -> Dyn,
+}
+
+let Result = {
+  success : Bool,
+  stdout : String,
+  stderr : String,
+  code : Number,
+}
+----
+
+=== Adapter Validation
+
+[source,nickel]
+----
+let validate_adapter = fun adapter =>
+  adapter.name != ""
+  && adapter.language != ""
+  && std.array.length adapter.tools > 0
+
+let validate_tool = fun tool =>
+  tool.name != ""
+  && tool.description != ""
+  && tool.inputSchema.type == "object"
+----
+
+=== Configuration Schema
+
+[source,nickel]
+----
+let Config = {
+  adapters : {
+    enabled : Array String,
+    timeout : Number | default = 120000,
+  },
+  security : {
+    sanitize_inputs : Bool | default = true,
+    allow_shell : Bool | default = false,
+  },
+  logging : {
+    level : [| 'debug, 'info, 'warn, 'error |] | default = 'info,
+    format : [| 'json, 'text |] | default = 'text,
+  },
+}
+----
+
+[#must]
+== Must Recipes
+
+=== Pre-commit Hooks
+
+[source,toml]
+----
+[must.pre-commit]
+description = "Pre-commit checks"
+commands = [
+    "deno fmt --check adapters/ tests/",
+    "deno lint adapters/ tests/",
+    "deno test --allow-run tests/"
+]
+----
+
+=== Audit Recipes
+
+[source,toml]
+----
+[must.audit]
+description = "Full security and quality audit"
+commands = [
+    "just security-scan",
+    "deno info"
+]
+
+[must.audit.security]
+description = "Security-focused audit"
+commands = [
+    "grep -rn 'sanitize' adapters/ | wc -l",
+    "grep -rn 'eval\\|exec\\|spawn' adapters/ || true"
+]
+
+[must.audit.spdx]
+description = "Check SPDX headers"
+commands = [
+    "for f in adapters/*.js; do head -2 \"$f\" | grep -q 'SPDX' || echo \"Missing: $f\"; done"
+]
+----
+
+=== Quality Gates
+
+[source,toml]
+----
+[must.quality]
+description = "Full quality gate check"
+commands = [
+    "deno fmt --check adapters/ tests/",
+    "deno lint adapters/ tests/",
+    "deno test --allow-run tests/"
+]
+
+[must.quality.coverage]
+description = "Check test coverage"
+commands = [
+    "deno test --allow-run --coverage=coverage/ tests/",
+    "deno coverage coverage/ --lcov > coverage/lcov.info"
+]
+----
+
+[#combinatorics]
+== CLI Combinatorics
+
+=== Command Permutations
+
+==== Testing Combinations
+
+[source,bash]
+----
+# Basic test run
+just test
+
+# Test + coverage
+just test-cov
+
+# Test + e2e
+just test test-e2e
+
+# Full test suite
+just test-all
+
+# Test single adapter
+just test-adapter zola
+
+# Test in container
+just container-test
+
+# Watch + test
+just watch
+----
+
+==== Quality Combinations
+
+[source,bash]
+----
+# Lint only
+just lint
+
+# Format only
+just fmt
+
+# Format + Lint
+just fmt && just lint
+
+# Full check (lint + type)
+just check
+
+# Check + Test
+just check && just test
+
+# Full quality gate
+must quality
+----
+
+==== Security Combinations
+
+[source,bash]
+----
+# Basic security scan
+just security-scan
+
+# Security audit
+must audit.security
+
+# Full audit
+must audit
+
+# SPDX check
+must audit.spdx
+
+# Pre-push (includes security)
+must pre-push
+----
+
+=== Command Concatenations
+
+==== Development Flow
+
+[source,bash]
+----
+# Start development
+just dev
+
+# Development cycle
+just fmt && just lint && just test
+
+# Full development check
+just check && just test && just security-scan
+----
+
+==== Release Flow
+
+[source,bash]
+----
+# Pre-release validation
+must release
+
+# Full release preparation
+just test-all && just security-scan && just docs && just release-prep 0.3.0
+
+# Create and push release
+just tag 0.3.0 && git push --tags
+----
+
+==== CI Flow
+
+[source,bash]
+----
+# Run CI locally
+must ci
+
+# Matrix testing
+must ci.matrix
+
+# Full CI pipeline
+just check && just test-all && just security-scan && just container-test
+----
+
+=== Pipeline Recipes
+
+==== Quick Validation
+
+[source,bash]
+----
+# 30-second validation
+just lint && just test
+----
+
+==== Standard CI
+
+[source,bash]
+----
+# 2-minute CI check
+just check && just test && just security-scan
+----
+
+==== Full Pipeline
+
+[source,bash]
+----
+# 5-minute full pipeline
+just check && just test-all && just security-scan && just container-test && just docs
+----
+
+[#hooks]
+== Hooks Configuration
+
+=== Git Hooks
+
+Create `.git/hooks/pre-commit`:
+
+[source,bash]
+----
+#!/bin/bash
+# Pre-commit hook for orbital-ssg
+
+echo "Running pre-commit checks..."
+
+# Format check
+deno fmt --check adapters/ tests/ || {
+    echo "❌ Format check failed. Run: just fmt"
+    exit 1
+}
+
+# Lint check
+deno lint adapters/ tests/ || {
+    echo "❌ Lint check failed. Run: just lint"
+    exit 1
+}
+
+# Quick tests
+deno test --allow-run tests/ || {
+    echo "❌ Tests failed. Run: just test"
+    exit 1
+}
+
+echo "✅ Pre-commit checks passed"
+----
+
+=== Claude Code Hooks
+
+Create `.claude/hooks.json`:
+
+[source,json]
+----
+{
+  "hooks": {
+    "pre-tool-use": {
+      "bash": {
+        "match": ["git commit", "git push"],
+        "command": "must pre-commit"
+      }
+    },
+    "post-tool-use": {
+      "edit": {
+        "match": ["adapters/*.js"],
+        "command": "deno lint adapters/"
+      }
+    }
+  }
+}
+----
+
+[#troubleshooting]
+== Troubleshooting
+
+=== Common Issues
+
+==== Adapter Not Connecting
+
+[source,bash]
+----
+# Check if SSG is installed
+which zola
+
+# Verify PATH
+echo $PATH
+
+# Test connection
+just adapter-check zola
+----
+
+==== Tests Failing
+
+[source,bash]
+----
+# Check Deno version
+deno --version
+
+# Install correct version
+asdf install
+
+# Run tests with verbose output
+deno test --allow-run --allow-read tests/ -- --verbose
+----
+
+==== Format/Lint Conflicts
+
+[source,bash]
+----
+# Auto-fix formatting
+just fmt
+
+# Then verify lint
+just lint
+----
+
+== Appendix
+
+=== Environment Variables
+
+[cols="2,3,1"]
+|===
+|Variable |Description |Default
+
+|`DENO_DIR`
+|Deno cache directory
+|`~/.cache/deno`
+
+|`NO_COLOR`
+|Disable colored output
+|(unset)
+
+|`ORBITAL_SSG_TIMEOUT`
+|Adapter timeout (ms)
+|120000
+|===
+
+=== File Locations
+
+[cols="2,3"]
+|===
+|Path |Purpose
+
+|`adapters/*.js`
+|SSG adapter implementations
+
+|`tests/*.test.js`
+|Unit tests
+
+|`tests/integration/*.test.js`
+|E2E tests
+
+|`justfile`
+|Task runner recipes
+
+|`Mustfile`
+|Mandatory checks
+
+|`deno.json`
+|Deno configuration
+
+|`.github/workflows/`
+|CI/CD pipelines
+|===
