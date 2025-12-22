@@ -9,20 +9,63 @@
   (purpose "Satellite SSG implementation integrating with poly-ssg-mcp hub")
 
   (position-in-ecosystem
-    "Part of hyperpolymath ecosystem. Follows RSR guidelines.")
+    "orbital-ssg is a satellite project in the hyperpolymath ecosystem.
+     It provides Deno-based MCP adapters for static site generators,
+     enabling AI-native workflows for content publishing across 17+ languages.")
 
   (related-projects
     (project
       (name "poly-ssg-mcp")
       (url "https://github.com/hyperpolymath/poly-ssg-mcp")
       (relationship "hub")
-      (description "Unified MCP server for 28 SSGs - provides adapter interface")
-      (differentiation
-        "poly-ssg-mcp = Hub with all SSG adapters via MCP
-         This project = Satellite SSG implementation using the hub"))
-    (project (name "rhodium-standard-repositories")
-             (url "https://github.com/hyperpolymath/rhodium-standard-repositories")
-             (relationship "standard")))
+      (description "Unified MCP server aggregating all SSG adapters")
+      (sync-direction "bidirectional"))
+    (project
+      (name "rhodium-standard-repositories")
+      (url "https://github.com/hyperpolymath/rhodium-standard-repositories")
+      (relationship "standard")
+      (description "RSR compliance guidelines and templates"))
+    (project
+      (name "noteg-mcp")
+      (url "https://github.com/hyperpolymath/noteg-mcp")
+      (relationship "sibling")
+      (description "Note G language MCP server"))
+    (project
+      (name "claude-code")
+      (url "https://github.com/anthropics/claude-code")
+      (relationship "consumer")
+      (description "Primary MCP client for adapter consumption")))
 
-  (what-this-is "Project in the hyperpolymath ecosystem")
-  (what-this-is-not "- NOT exempt from RSR compliance"))
+  (integration-points
+    (mcp-tools "Each adapter exports MCP-compatible tools array")
+    (hub-sync "Adapters sync to/from poly-ssg-mcp via transfer script")
+    (ci-cd "GitHub Actions with CodeQL and Deno test runner"))
+
+  (supported-languages
+    (rust . ("cobalt" "mdbook" "zola"))
+    (haskell . ("ema" "hakyll"))
+    (julia . ("documenter" "franklin" "staticwebpages"))
+    (clojure . ("babashka" "cryogen" "perun"))
+    (elixir . ("nimble-publisher" "serum" "tableau"))
+    (scala . ("laika" "scalatex"))
+    (racket . ("frog" "pollen"))
+    (lisp . ("coleslaw"))
+    (fsharp . ("fornax"))
+    (crystal . ("marmot"))
+    (nim . ("nimrod"))
+    (kotlin . ("orchid"))
+    (d . ("reggae"))
+    (swift . ("publish"))
+    (tcl . ("wub"))
+    (ocaml . ("yocaml"))
+    (erlang . ("zotonic")))
+
+  (what-this-is
+    "A collection of 28 MCP-compatible adapters for static site generators,
+     enabling AI agents to build, serve, and manage static sites across
+     17+ programming language ecosystems.")
+
+  (what-this-is-not
+    "- NOT a static site generator itself
+     - NOT a replacement for poly-ssg-mcp (it's a satellite)
+     - NOT exempt from RSR compliance"))

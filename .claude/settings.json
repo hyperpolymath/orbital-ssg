@@ -1,0 +1,33 @@
+{
+  "$schema": "https://claude.ai/schemas/settings.json",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": {
+          "tool": "Bash",
+          "command": "git commit|git push"
+        },
+        "hooks": [
+          {
+            "type": "command",
+            "command": "deno fmt --check adapters/ tests/ && deno lint adapters/ tests/"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": {
+          "tool": "Edit",
+          "path": "adapters/*.js"
+        },
+        "hooks": [
+          {
+            "type": "command",
+            "command": "deno lint adapters/"
+          }
+        ]
+      }
+    ]
+  }
+}

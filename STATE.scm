@@ -2,6 +2,10 @@
 ;; SPDX-License-Identifier: AGPL-3.0-or-later
 ;; SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 
+(define-module (orbital-ssg state)
+  #:export (metadata current-position components blockers-and-issues
+            critical-next-actions roadmap session-history state-summary))
+
 (define metadata
   '((version . "0.1.0") (updated . "2025-12-17") (project . "orbital-ssg")))
 
@@ -12,7 +16,13 @@
                  (security-fixes ((status . "complete") (completion . 100)))
                  (adapter-sanitization ((status . "complete") (completion . 100)))))))
 
-(define blockers-and-issues '((critical ()) (high-priority ())))
+(define blockers-and-issues
+  '((critical ())
+    (high-priority ())
+    (resolved
+      (("Code injection in Julia adapters" . "2025-12-22")
+       ("Code injection in Lisp adapters" . "2025-12-22")
+       ("Template placeholders in SECURITY.md" . "2025-12-22")))))
 
 (define critical-next-actions
   '((immediate (("Verify CI/CD" . high) ("Add adapter tests" . high)))
