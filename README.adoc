@@ -1,301 +1,36 @@
-// SPDX-License-Identifier: AGPL-3.0-or-later
-// SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 = orbital-ssg
-:toc: left
-:toclevels: 3
-:sectnums:
+:toc:
+:toc-title: Table of Contents
 :icons: font
-:source-highlighter: rouge
 
-== Overview
+**Multi-paradigm, circular site generation in Ring.**
+"Orbital" — A generator that loops through paradigms. Combining the simplicity of scripting with the power of C for high-speed synthesis.
 
-*orbital-ssg* is a collection of 28 MCP-compatible adapters for static site generators across 17 programming languages. Part of the https://github.com/hyperpolymath[hyperpolymath] ecosystem.
+== Who Is This For?
+* **Multi-paradigm developers** who want to mix Object-Oriented, Functional, and Declarative logic in a single template.
+* **Mobile Developers** targeting **Android** or **iOS** with a lightweight, embedded SSG core.
+* **Architects** needing an engine that can easily be embedded into larger C/C++ applications without complex runtimes.
 
-[.lead]
-Enable AI agents to build, serve, and manage static sites across Rust, Haskell, Julia, Elixir, and 13 more language ecosystems.
+== Why orbital-ssg?
 
-=== Features
+=== Paradigm-Fluid Logic
+In `orbital-ssg`, you are not locked into one way of thinking. You can switch between imperative loops and functional maps within the same template block. The Ring core provides the "Orbital" speed required for quick iteration on **PC**, **Android**, and **Minix**.
 
-* *28 SSG Adapters* - Zola, Hakyll, Franklin, Serum, and more
-* *17 Languages* - Rust, Haskell, Julia, Clojure, Elixir, Scala, etc.
-* *MCP Protocol* - Model Context Protocol compatible tools
-* *Secure by Design* - Input sanitization prevents code injection
-* *Deno Runtime* - Modern, secure JavaScript runtime
-* *RSR Compliant* - Follows Rhodium Standard Repository guidelines
+=== Lightweight Embedding
+Ring is designed to be small and fast. `orbital-ssg` can be embedded into existing toolchains as a library, allowing other projects in the **poly-ssg** family to call its circular logic for specific rendering tasks.
 
-=== Quick Start
-
-[source,bash]
+== Quick Start
+[source,oil]
 ----
-# Clone the repository
-git clone https://github.com/hyperpolymath/orbital-ssg.git
-cd orbital-ssg
+# Bootstrap the Ring environment
+just setup
 
-# Install dependencies
-asdf install
+# Build the site using the multi-paradigm engine
+just build
 
-# Run tests
-just test
-
-# List adapters
-just adapters
+# Embed the generator logic into a C-wrapper
+just compile-embedded
 ----
-
-== Supported Static Site Generators
-
-[cols="2,2,3"]
-|===
-|Language |SSG |Adapter
-
-|Rust
-|https://www.getzola.org/[Zola]
-|`adapters/zola.js`
-
-|Rust
-|https://rust-lang.github.io/mdBook/[mdBook]
-|`adapters/mdbook.js`
-
-|Rust
-|https://cobalt-org.github.io/[Cobalt]
-|`adapters/cobalt.js`
-
-|Haskell
-|https://jaspervdj.be/hakyll/[Hakyll]
-|`adapters/hakyll.js`
-
-|Haskell
-|https://ema.srid.ca/[Ema]
-|`adapters/ema.js`
-
-|Julia
-|https://franklinjl.org/[Franklin.jl]
-|`adapters/franklin.js`
-
-|Julia
-|https://documenter.juliadocs.org/[Documenter.jl]
-|`adapters/documenter.js`
-
-|Julia
-|https://github.com/Azzaare/StaticWebPages.jl[StaticWebPages.jl]
-|`adapters/staticwebpages.js`
-
-|Clojure
-|https://babashka.org/[Babashka]
-|`adapters/babashka.js`
-
-|Clojure
-|https://cryogenweb.org/[Cryogen]
-|`adapters/cryogen.js`
-
-|Clojure
-|https://perun.io/[Perun]
-|`adapters/perun.js`
-
-|Elixir
-|https://github.com/dashbitco/nimble_publisher[NimblePublisher]
-|`adapters/nimble-publisher.js`
-
-|Elixir
-|https://dalgona.github.io/Serum/[Serum]
-|`adapters/serum.js`
-
-|Elixir
-|https://github.com/elixir-tools/tableau[Tableau]
-|`adapters/tableau.js`
-
-|Scala
-|https://planet42.github.io/Laika/[Laika]
-|`adapters/laika.js`
-
-|Scala
-|https://github.com/lihaoyi/scalatex[ScalaTex]
-|`adapters/scalatex.js`
-
-|Racket
-|https://docs.racket-lang.org/frog/[Frog]
-|`adapters/frog.js`
-
-|Racket
-|https://docs.racket-lang.org/pollen/[Pollen]
-|`adapters/pollen.js`
-
-|Common Lisp
-|https://github.com/kingcons/coleslaw[Coleslaw]
-|`adapters/coleslaw.js`
-
-|F#
-|https://ionide.io/Tools/fornax.html[Fornax]
-|`adapters/fornax.js`
-
-|Crystal
-|https://github.com/ralsina/marmot[Marmot]
-|`adapters/marmot.js`
-
-|Nim
-|Nimrod
-|`adapters/nimrod.js`
-
-|Kotlin
-|https://orchid.run/[Orchid]
-|`adapters/orchid.js`
-
-|D
-|https://github.com/atilaneves/reggae[Reggae]
-|`adapters/reggae.js`
-
-|Swift
-|https://github.com/JohnSundell/Publish[Publish]
-|`adapters/publish.js`
-
-|Tcl
-|Wub
-|`adapters/wub.js`
-
-|OCaml
-|https://github.com/xhtmlboi/yocaml[YOCaml]
-|`adapters/yocaml.js`
-
-|Erlang
-|https://zotonic.com/[Zotonic]
-|`adapters/zotonic.js`
-|===
-
-== Usage
-
-=== As MCP Tools
-
-Each adapter exports MCP-compatible tools:
-
-[source,javascript]
-----
-import * as zola from "./adapters/zola.js";
-
-// Check connection
-if (await zola.connect()) {
-  // Use tools
-  const result = await zola.tools[0].execute({ path: "./my-site" });
-  console.log(result);
-}
-----
-
-=== Available Tools per Adapter
-
-Each adapter typically provides:
-
-* `<ssg>_init` - Initialize a new site
-* `<ssg>_build` - Build the site
-* `<ssg>_serve` - Start development server
-* `<ssg>_check` - Validate site
-* `<ssg>_version` - Get SSG version
-
-== Development
-
-=== Prerequisites
-
-* https://deno.land/[Deno] >= 2.1.4
-* https://just.systems/[just] >= 1.36.0
-* https://asdf-vm.com/[asdf] (optional, for version management)
-
-=== Commands
-
-[source,bash]
-----
-# Run tests
-just test
-
-# Run all tests (unit + e2e)
-just test-all
-
-# Lint code
-just lint
-
-# Format code
-just fmt
-
-# Check project health
-just check
-
-# Security scan
-just security-scan
-
-# Build container
-just container
-----
-
-See link:cookbook.adoc[cookbook.adoc] for comprehensive recipes.
-
-== Architecture
-
-=== Adapter Structure
-
-Each adapter follows this pattern:
-
-[source,javascript]
-----
-// Required exports
-export const name = "SSG Name";
-export const language = "Language";
-export const description = "Description";
-
-// Connection management
-export async function connect() { ... }
-export async function disconnect() { ... }
-export function isConnected() { ... }
-
-// MCP-compatible tools
-export const tools = [
-  {
-    name: "ssg_operation",
-    description: "Operation description",
-    inputSchema: { type: "object", properties: { ... } },
-    execute: async (params) => { ... }
-  }
-];
-----
-
-=== Security
-
-All adapters implement input sanitization to prevent code injection:
-
-* *Julia adapters*: Escape `\`, `"`, `$`, `` ` ``
-* *Lisp adapters*: Escape `\`, `"`
-* *Identifier validation*: Only alphanumeric and underscore
-
-== Project Structure
-
-[source]
-----
-orbital-ssg/
-├── adapters/           # 28 SSG adapters
-├── tests/              # Unit and integration tests
-├── .github/workflows/  # CI/CD pipelines
-├── justfile            # Task runner
-├── Mustfile            # Mandatory checks
-├── cookbook.adoc       # Recipes and commands
-├── deno.json           # Deno configuration
-├── Containerfile       # Container build
-└── *.scm               # Project metadata
-----
-
-== Related Projects
-
-* https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp] - Hub aggregating all SSG adapters
-* https://github.com/hyperpolymath/rhodium-standard-repositories[RSR] - Repository standards
 
 == License
-
-Dual-licensed under MIT OR AGPL-3.0-or-later.
-
-See link:LICENSE.txt[LICENSE.txt] for details.
-
-== Contributing
-
-See link:CONTRIBUTING.md[CONTRIBUTING.md] for guidelines.
-
-== Security
-
-See link:SECURITY.md[SECURITY.md] for reporting vulnerabilities.
-
----
-
-Part of the https://github.com/hyperpolymath[hyperpolymath] ecosystem.
+AGPL-3.0-or-later

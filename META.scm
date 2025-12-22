@@ -3,8 +3,7 @@
 ;;; META.scm — orbital-ssg
 
 (define-module (orbital-ssg meta)
-  #:export (architecture-decisions development-practices design-rationale
-            language-stack tooling-requirements))
+  #:export (architecture-decisions development-practices design-rationale))
 
 (define architecture-decisions
   '((adr-001

@@ -1,15 +1,12 @@
 ;; SPDX-License-Identifier: AGPL-3.0-or-later
 ;; SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
-;;; ECOSYSTEM.scm — orbital-ssg
-
-(define-module (orbital-ssg ecosystem)
-  #:export (ecosystem-metadata related-projects integration-points))
+;; ECOSYSTEM.scm — orbital-ssg
 
 (ecosystem
   (version "1.0.0")
   (name "orbital-ssg")
-  (type "satellite")
-  (purpose "Unified MCP adapter library for 28+ static site generators")
+  (type "project")
+  (purpose "Satellite SSG implementation integrating with poly-ssg-mcp hub")
 
   (position-in-ecosystem
     "orbital-ssg is a satellite project in the hyperpolymath ecosystem.
